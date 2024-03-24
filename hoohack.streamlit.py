@@ -8,28 +8,37 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import streamlit as st
 import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestRegressor
 
-st.title("Welcome to H&H!")
-st.write("Explore your inner self hehe.")
+st.title("🌟 Welcome to Happy & Healthy!🌟")
 
-name = st.text_input("User Name")
-email = st.text_input("Email")
-password = st.text_input("passwords")
-button1 = st.button("Sign in")
+st.write("")
+st.write("Hey there, lovely soul! Welcome to our cozy corner of the digital world!😊")
+st.write("Here, we're all about exploring emotions, tracking moods, and sprinkling a little extra sparkle into your day.")
+st.write("Life can be a whirlwind sometimes, can't it? But fear not! Our app is here to be your trusty companion through it all. Whether you're feeling as bright as a sunny day 🌞 or as cozy as a rainy afternoon 🌧️, we've got your back!")
+st.write("So go ahead, dive right in! Let's take a moment to tune into how you're feeling today. Log in, and together, let's embark on a journey of self-discovery and emotional well-being. 🚀✨")
+st.write("We're thrilled to have you here! Let's make each day a little brighter, one mood at a time. Welcome aboard!💖")
+st.divider()
 
+st.subheader("Log In to track your mood")
+with st.container():
+    name = st.text_input("User Name")
+    mail = st.text_input("Email")
+    password = st.text_input("passwords")
+    button1 = st.button("Sign in")
 
-if button1:
-    messages = st.container(height=300)
-    messages.chat_message("H&H").write(f"Hello! {name}")
-    messages.chat_message("H&H").write("Happy to see you here! I want to ask you some questions!")
-    emotion_score = messages.chat_message("H&H").slider("How is your mood today?" , -2, 2, 0)
-    exercise_ = messages.chat_message("H&H").radio("Have you exercise today?", ["Yes", "No"])
-    stay_home_ = messages.chat_message("H&H").radio("Have you left home today?", ["Yes", "No"])
-    work_ = messages.chat_message("H&H").radio("Did you work today?", ["Yes", "No"])
-    talk_ = messages.chat_message("H&H").slider("How many people you've talked to today? (choose 5 if more than 5)", 0, 5, 1)
-    sleep_ = messages.chat_message("H&H").slider("How long you've slept last night? (0 if none, 1 if less than 3 hours, 2 if less than 6 hours, 3 if more than 8 hours)", 0, 5, 1)
-    relax_ = messages.chat_message("H&H").radio("Did you do any relaxing activity today? (i.e. hang out with friend, try hobbies...", ["Yes", "No"])
-    check = st.button("Next")
+avatar_path = "E:/MQM_Courses/AllCase/Hoohack/animal-avatar-bear-svgrepo-com.svg"
+with st.container(height=300) as messages:
+    st.chat_message("H&H", avatar= avatar_path).write(f"Hello! {name}! Happy to see you here! ")
+    emotion_score = st.chat_message("H&H", avatar= avatar_path).slider("How is your mood today?" , -2, 2)
+    exercise_ = st.chat_message("H&H", avatar= avatar_path).radio("Have you exercise today?", ["Yes", "No"])
+    stay_home_ = st.chat_message("H&H", avatar= avatar_path).radio("Have you left home today?", ["Yes", "No"])
+    work_ = st.chat_message("H&H", avatar= avatar_path).radio("Did you work today?", ["Yes", "No"])
+    talk_ = st.chat_message("H&H", avatar= avatar_path).slider("How many people you've talked to today? (choose 5 if more than 5)", 0, 5, 1)
+    sleep_ = st.chat_message("H&H", avatar= avatar_path).slider("How long you've slept last night? (0 if none, 1 if less than 3 hours, 2 if less than 6 hours, 3 if more than 8 hours)", 0, 3, 1)
+    relax_ = st.chat_message("H&H", avatar= avatar_path).radio("Did you do any relaxing activity today? (i.e. hang out with friend, try hobbies...", ["Yes", "No"])
+    check = st.button("View Summary of my mood")
+
 
 data_today = {
     'Date': datetime.now().date(),
@@ -41,7 +50,12 @@ data_today = {
     'Sleep_time': sleep_,
     'Relax': relax_
 }
+
 data_today = pd.DataFrame(data_today, index = [0])
+if check:
+    st.subheader("Your mood today")
+    st.table(data_today)
+    st.divider()
 data_today.replace({'Yes': 1, 'No': 0}, inplace=True)
 
 n_days = 100
@@ -81,9 +95,12 @@ chart_data = pd.DataFrame({
     'Scores': df['Scores']})
 
 if check:
-    st.subheader('Emotion Score Chart')
-    st.line_chart(data = chart_data, x = 'Date', y = 'Scores')
-
+    days_record = df.shape[0]
+    st.header('Emotion Score Chart')
+    st.write(f"Take a moment to explore your mood chart of the past {days_record} days with a sprinkle of positivity! ✨📊 Your emotional journey awaits! 💖")
+    st.write("")
+    st.line_chart(data = chart_data, x = 'Date', y = 'Scores', color='#dba495')
+    st.divider()
 
 ## split data
 df['const'] = 1
@@ -104,9 +121,6 @@ X.drop(columns=['Date'], inplace=True)
 X_train.drop(columns=['Date'], inplace=True)
 X_test.drop(columns=['Date'], inplace=True)
 
-"""## Random Forest"""
-
-from sklearn.ensemble import RandomForestRegressor
 
 rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
 rf_model.fit(X_train, y_train)
@@ -132,5 +146,9 @@ feature_names = ['Exercise', 'Stay_at_home', 'Work/Study', 'Talk_to_people', 'Sl
 rf_importance = pd.DataFrame({'Feature': feature_names, 'Importance': importance})
 
 if check:
-    st.bar_chart(rf_importance, x = 'Feature', y = 'Importance')
-
+    st.subheader("What are influencing your mood the most?")
+    st.write("Discover the key factors shaping your mood over time! 🌟" )
+    st.write("Reflect on your journey and gain insights into what brings you joy and fulfillment. Let's celebrate the highs and navigate through the lows together, embracing each experience as a stepping stone to greater happiness! ☀️💖")
+    st.write("")
+    st.bar_chart(rf_importance, x = 'Feature', y = 'Importance', color = "#dba495")
+    selected_features = rf_importance.loc[rf_importance['Importance'] > 0.2, 'Feature']
