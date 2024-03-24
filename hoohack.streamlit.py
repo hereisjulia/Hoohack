@@ -17,16 +17,19 @@ email = st.text_input("Email")
 password = st.text_input("passwords")
 button1 = st.button("Sign in")
 
-messages = st.container(height=300)
-messages.chat_message("H&H").write(f"Hello! {name}")
-messages.chat_message("H&H").write("Happy to see you here! I want to ask you some questions!")
-emotion_score = messages.chat_message("H&H").slider("How is your mood today?" , -2, 2, 0)
-exercise_ = messages.chat_message("H&H").radio("Have you exercise today?", ["Yes", "No"])
-stay_home_ = messages.chat_message("H&H").radio("Have you left home today?", ["Yes", "No"])
-work_ = messages.chat_message("H&H").radio("Did you work today?", ["Yes", "No"])
-talk_ = messages.chat_message("H&H").slider("How many people you've talked to today? (choose 5 if more than 5)", 0, 5, 1)
-sleep_ = messages.chat_message("H&H").slider("How long you've slept last night? (0 if none, 1 if less than 3 hours, 2 if less than 6 hours, 3 if more than 8 hours)", 0, 5, 1)
-relax_ = messages.chat_message("H&H").radio("Did you do any relaxing activity today? (i.e. hang out with friend, try hobbies...", ["Yes", "No"])
+
+if button1:
+    messages = st.container(height=300)
+    messages.chat_message("H&H").write(f"Hello! {name}")
+    messages.chat_message("H&H").write("Happy to see you here! I want to ask you some questions!")
+    emotion_score = messages.chat_message("H&H").slider("How is your mood today?" , -2, 2, 0)
+    exercise_ = messages.chat_message("H&H").radio("Have you exercise today?", ["Yes", "No"])
+    stay_home_ = messages.chat_message("H&H").radio("Have you left home today?", ["Yes", "No"])
+    work_ = messages.chat_message("H&H").radio("Did you work today?", ["Yes", "No"])
+    talk_ = messages.chat_message("H&H").slider("How many people you've talked to today? (choose 5 if more than 5)", 0, 5, 1)
+    sleep_ = messages.chat_message("H&H").slider("How long you've slept last night? (0 if none, 1 if less than 3 hours, 2 if less than 6 hours, 3 if more than 8 hours)", 0, 5, 1)
+    relax_ = messages.chat_message("H&H").radio("Did you do any relaxing activity today? (i.e. hang out with friend, try hobbies...", ["Yes", "No"])
+    check = st.button("Next")
 
 data_today = {
     'Date': datetime.now().date(),
@@ -73,12 +76,13 @@ df = pd.DataFrame(data)
 df = pd.concat([df, data_today], axis=0)
 
 # Print the DataFrame
-
-st.subheader('Emotion Score Chart')
 chart_data = pd.DataFrame({
     'Date': df['Date'],
     'Scores': df['Scores']})
-st.line_chart(data = chart_data, x = 'Date', y = 'Scores')
+
+if check:
+    st.subheader('Emotion Score Chart')
+    st.line_chart(data = chart_data, x = 'Date', y = 'Scores')
 
 
 ## split data
@@ -127,5 +131,6 @@ importance = rf_model.feature_importances_
 feature_names = ['Exercise', 'Stay_at_home', 'Work/Study', 'Talk_to_people', 'Sleep_time', 'Relax', 'const']
 rf_importance = pd.DataFrame({'Feature': feature_names, 'Importance': importance})
 
-st.bar_chart(rf_importance, x = 'Feature', y = 'Importance')
+if check:
+    st.bar_chart(rf_importance, x = 'Feature', y = 'Importance')
 
